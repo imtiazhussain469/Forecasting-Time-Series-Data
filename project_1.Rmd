@@ -1,0 +1,1510 @@
+---
+title: "Forecasting and Mapping of Data"
+output:
+  html_document: default
+  pdf_document: default
+date: "2023-01-31"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Basic Mapping
+
+```{r}
+setwd("C:/Users/A S Computer/Downloads")
+
+#libraries required in the task
+library(tidyverse)
+library(ggplot2)
+library(forecast)
+
+#lading data
+df = read.csv("data (1).csv")
+
+str(df)
+
+df$Date =as.POSIXct(df$Date,format="%d/%m/%Y %H:%M")
+
+# removing dollar sign from string
+df$Cost = gsub("\\$", "", df$Cost)
+
+df$Cost = as.numeric(df$Cost)
+
+df$Year <- format(as.Date(df$Date), "%Y")
+
+df$Department = as.factor(df$Department)
+
+df$Year_month <- format(as.Date(df$Date), "%Y-%m")
+
+# remove NA values in the dataset
+df = na.omit(df)
+
+str(df)
+
+
+df_final = df%>%
+              group_by(Year )%>%
+              summarise(count = n(),
+                        Total_cost = sum(Cost))
+
+# plot for the count of orders over time (years)
+
+ggplot(df_final, aes(x = Year, y = count, group = 1))+
+  geom_line()+
+  geom_point()+
+  ggtitle("Count of orders over time (years)")+
+  ylab("Counts of orders")
+
+
+# plot for the costs of orders over time (years)
+ggplot(df_final, aes(x = Year, y = Total_cost, group =1))+
+  geom_line()+
+  geom_point()+
+  ggtitle("Costs of orders over time (years)")+
+  scale_y_continuous(name="Cost ($)", labels = scales::comma)
+
+```
+
+## ARIMA Forecasting
+
+```{r}
+
+# now forecasting by each department
+
+CC <- df[ which(df$Department=='CC'),]
+
+df_final = CC%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for count of sales by the Department - CC")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for Total Cost of sales by the Department - CC")
+
+
+
+CIT <- df[ which(df$Department=='CIT'),]
+
+df_final = CIT%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for count of sales by the Department - CIT")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for Total Cost of sales by the Department - CIT")
+
+CSR <- df[ which(df$Department=='CSR'),]
+
+df_final = CSR%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for count of sales by the Department - CSR")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for Total Cost of sales by the Department - CSR")
+
+
+FIC <- df[ which(df$Department=='FIC'),]
+
+df_final = FIC%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for count of sales by the Department - FIC")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for Total Cost of sales by the Department - FIC")
+
+NCCIH <- df[ which(df$Department=='NCCIH'),]
+
+df_final = NCCIH%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for count of sales by the Department - NCCIH")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for Total Cost of sales by the Department - NCCIH")
+
+NCI <- df[ which(df$Department=='NCI'),]
+
+df_final = NCI%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for count of sales by the Department - NCI")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for Total Cost of sales by the Department - NCI")
+
+NEI <- df[ which(df$Department=='NEI'),]
+
+df_final = NEI%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for count of sales by the Department - NEI")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for Total Cost of sales by the Department - NEI")
+
+NHGRI <- df[ which(df$Department=='NHGRI'),]
+
+df_final = NHGRI%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for count of sales by the Department - NHGRI")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for Total Cost of sales by the Department - NHGRI")
+
+NHLBI <- df[ which(df$Department=='NHLBI'),]
+
+df_final = NHLBI%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for count of sales by the Department - NHLBI")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for Total Cost of sales by the Department - NHLBI")
+
+NIA <- df[ which(df$Department=='NIA'),]
+
+df_final = NIA%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for count of sales by the Department - NIA")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for Total Cost of sales by the Department - NIA")
+
+NIAAA <- df[ which(df$Department=='NIAAA'),]
+
+df_final = NIAAA%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for count of sales by the Department - NIAAA")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for Total Cost of sales by the Department - NIAAA")
+
+NIAID <- df[ which(df$Department=='NIAID'),]
+
+df_final = NIAID%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for count of sales by the Department - NIAID")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for Total Cost of sales by the Department - NIAID")
+
+NIAMS <- df[ which(df$Department=='NIAMS'),]
+
+df_final = NIAMS%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for count of sales by the Department - NIAMS")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for Total Cost of sales by the Department - NIAMS")
+
+NIBIB <- df[ which(df$Department=='NIBIB'),]
+
+df_final = NIBIB%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for count of sales by the Department - NIBIB")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for Total Cost of sales by the Department - NIBIB")
+
+NICHD <- df[ which(df$Department=='NICHD'),]
+df_final = NICHD%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for count of sales by the Department - NICHD")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for Total Cost of sales by the Department - NICHD")
+
+NIDA <- df[ which(df$Department=='NIDA'),]
+
+df_final = NIDA%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for count of sales by the Department - NIDA")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for Total Cost of sales by the Department - NIDA")
+
+NIDCD  <- df[ which(df$Department=='NIDCD'),]
+
+df_final = NIDCD%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for count of sales by the Department - NIDCD")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for Total Cost of sales by the Department - NIDCD")
+NIDCR <- df[ which(df$Department=='NIDCR'),]
+
+df_final = NIDCR%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for count of sales by the Department - NIDCR")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for Total Cost of sales by the Department - NIDCR")
+
+NIDDK <- df[ which(df$Department=='NIDDK'),]
+
+df_final = NIDDK%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for count of sales by the Department - NIDDK")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for Total Cost of sales by the Department - NIDDK")
+
+NIEHS <- df[ which(df$Department=='NIEHS'),]
+
+df_final = NIEHS%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for count of sales by the Department - NIEHS")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for Total Cost of sales by the Department - NIEHS")
+
+NIGMS <- df[ which(df$Department=='NIGMS'),]
+
+df_final = NIGMS%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for count of sales by the Department - NIGMS")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for Total Cost of sales by the Department - NIGMS")
+
+NIMH <- df[ which(df$Department=='NIMH'),]
+
+df_final = NIMH%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for count of sales by the Department - NIMH")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for Total Cost of sales by the Department - NIMH")
+
+NIMHD <- df[ which(df$Department=='NIMHD'),]
+
+df_final = NIMHD%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for count of sales by the Department - NIMHD")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for Total Cost of sales by the Department - NIMHD")
+
+NINDS <- df[ which(df$Department=='NINDS'),]
+
+df_final = NINDS%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for count of sales by the Department - NINDS")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for Total Cost of sales by the Department - NINDS")
+
+NINR <- df[ which(df$Department=='NINR'),]
+
+df_final = NINR%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for count of sales by the Department - NINR")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for Total Cost of sales by the Department - NINR")
+
+NLM <- df[ which(df$Department=='NLM'),]
+
+df_final = NLM%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=5)  
+
+plot(fore_arima, main = "Forecasting for count of sales by the Department - NLM")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for Total Cost of sales by the Department - NLM")
+
+OD <- df[ which(df$Department=='OD'),]
+
+df_final = OD%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for count of sales by the Department - OD")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for Total Cost of sales by the Department - OD")
+
+`OD/OLAO` <- df[ which(df$Department=='OD/OLAO'),]
+
+df_final = `OD/OLAO` %>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+### No values are there for OD/OLAO
+
+
+`OD/ORF/BF` <- df[ which(df$Department=='OD/ORF/BF'),]
+
+df_final = `OD/ORF/BF`%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+### No values are there for OD/ORF/BF
+
+`OD/ORF` <- df[ which(df$Department=='OD/ORF'),]
+
+df_final = `OD/ORF`%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for count of sales by the Department - OD/ORF")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for Total Cost of sales by the Department - OD/ORF")
+
+ORF <- df[ which(df$Department=='ORF'),]
+
+df_final = ORF%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+### No values are there for ORF
+
+ORS <- df[ which(df$Department=='ORS'),]
+
+df_final = ORS%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for count of sales by the Department - ORS")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_arima = forecast::forecast(arima_model, level=c(95), h=12)  
+
+plot(fore_arima, main = "Forecasting for Total Cost of sales by the Department - ORS")
+
+
+```
+
+
+## Navies Forecasting
+
+
+```{r}
+# now forecasting by each department
+
+CC <- df[ which(df$Department=='CC'),]
+
+df_final = CC%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_navies = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_navies, main = "Forecasting for count of sales by the Department - CC")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for Total Cost of sales by the Department - CC")
+
+
+CIT <- df[ which(df$Department=='CIT'),]
+
+df_final = CIT%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for count of sales by the Department - CIT")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for Total Cost of sales by the Department - CIT")
+
+CSR <- df[ which(df$Department=='CSR'),]
+
+df_final = CSR%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for count of sales by the Department - CSR")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for Total Cost of sales by the Department - CSR")
+
+
+FIC <- df[ which(df$Department=='FIC'),]
+
+df_final = FIC%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for count of sales by the Department - FIC")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for Total Cost of sales by the Department - FIC")
+
+NCCIH <- df[ which(df$Department=='NCCIH'),]
+
+df_final = NCCIH%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for count of sales by the Department - NCCIH")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for Total Cost of sales by the Department - NCCIH")
+
+NCI <- df[ which(df$Department=='NCI'),]
+
+df_final = NCI%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for count of sales by the Department - NCI")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for Total Cost of sales by the Department - NCI")
+
+NEI <- df[ which(df$Department=='NEI'),]
+
+df_final = NEI%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for count of sales by the Department - NEI")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for Total Cost of sales by the Department - NEI")
+
+NHGRI <- df[ which(df$Department=='NHGRI'),]
+
+df_final = NHGRI%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for count of sales by the Department - NHGRI")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+arima_model <- auto.arima(dat_ts)
+summary(arima_model)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for Total Cost of sales by the Department - NHGRI")
+
+NHLBI <- df[ which(df$Department=='NHLBI'),]
+
+df_final = NHLBI%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for count of sales by the Department - NHLBI")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for Total Cost of sales by the Department - NHLBI")
+
+NIA <- df[ which(df$Department=='NIA'),]
+
+df_final = NIA%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for count of sales by the Department - NIA")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for Total Cost of sales by the Department - NIA")
+
+NIAAA <- df[ which(df$Department=='NIAAA'),]
+
+df_final = NIAAA%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for count of sales by the Department - NIAAA")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for Total Cost of sales by the Department - NIAAA")
+
+NIAID <- df[ which(df$Department=='NIAID'),]
+
+df_final = NIAID%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for count of sales by the Department - NIAID")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for Total Cost of sales by the Department - NIAID")
+
+NIAMS <- df[ which(df$Department=='NIAMS'),]
+
+df_final = NIAMS%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for count of sales by the Department - NIAMS")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for Total Cost of sales by the Department - NIAMS")
+
+NIBIB <- df[ which(df$Department=='NIBIB'),]
+
+df_final = NIBIB%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for count of sales by the Department - NIBIB")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for Total Cost of sales by the Department - NIBIB")
+
+NICHD <- df[ which(df$Department=='NICHD'),]
+df_final = NICHD%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for count of sales by the Department - NICHD")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for Total Cost of sales by the Department - NICHD")
+
+NIDA <- df[ which(df$Department=='NIDA'),]
+
+df_final = NIDA%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for count of sales by the Department - NIDA")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for Total Cost of sales by the Department - NIDA")
+
+NIDCD  <- df[ which(df$Department=='NIDCD'),]
+
+df_final = NIDCD%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for count of sales by the Department - NIDCD")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for Total Cost of sales by the Department - NIDCD")
+
+NIDCR <- df[ which(df$Department=='NIDCR'),]
+
+df_final = NIDCR%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for count of sales by the Department - NIDCR")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for Total Cost of sales by the Department - NIDCR")
+
+NIDDK <- df[ which(df$Department=='NIDDK'),]
+
+df_final = NIDDK%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for count of sales by the Department - NIDDK")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for Total Cost of sales by the Department - NIDDK")
+
+NIEHS <- df[ which(df$Department=='NIEHS'),]
+
+df_final = NIEHS%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for count of sales by the Department - NIEHS")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for Total Cost of sales by the Department - NIEHS")
+
+NIGMS <- df[ which(df$Department=='NIGMS'),]
+
+df_final = NIGMS%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for count of sales by the Department - NIGMS")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for Total Cost of sales by the Department - NIGMS")
+
+NIMH <- df[ which(df$Department=='NIMH'),]
+
+df_final = NIMH%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for count of sales by the Department - NIMH")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for Total Cost of sales by the Department - NIMH")
+
+NIMHD <- df[ which(df$Department=='NIMHD'),]
+
+df_final = NIMHD%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for count of sales by the Department - NIMHD")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for Total Cost of sales by the Department - NIMHD")
+
+NINDS <- df[ which(df$Department=='NINDS'),]
+
+df_final = NINDS%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for count of sales by the Department - NINDS")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for Total Cost of sales by the Department - NINDS")
+
+NINR <- df[ which(df$Department=='NINR'),]
+
+df_final = NINR%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for count of sales by the Department - NINR")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for Total Cost of sales by the Department - NINR")
+
+NLM <- df[ which(df$Department=='NLM'),]
+
+df_final = NLM%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for count of sales by the Department - NLM")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for Total Cost of sales by the Department - NLM")
+
+OD <- df[ which(df$Department=='OD'),]
+
+df_final = OD%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for count of sales by the Department - OD")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for Total Cost of sales by the Department - OD")
+
+`OD/OLAO` <- df[ which(df$Department=='OD/OLAO'),]
+
+df_final = `OD/OLAO` %>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+
+### No values are there for OD/OLAO
+
+
+`OD/ORF/BF` <- df[ which(df$Department=='OD/ORF/BF'),]
+
+df_final = `OD/ORF/BF`%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+
+### No values are there for OD/ORF/BF
+
+`OD/ORF` <- df[ which(df$Department=='OD/ORF'),]
+
+df_final = `OD/ORF`%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for count of sales by the Department - OD/ORF")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for Total Cost of sales by the Department - OD/ORF")
+
+ORF <- df[ which(df$Department=='ORF'),]
+
+df_final = ORF%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+### No values are there for ORF
+
+ORS <- df[ which(df$Department=='ORS'),]
+
+df_final = ORS%>%
+  group_by(Year_month )%>%
+  summarise(count = n(),
+            Total_cost = sum(Cost))
+
+summary(df_final$Year_month)
+
+dat_ts <- ts(df_final[, 2], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for count of sales by the Department - ORS")
+
+dat_ts <- ts(df_final[, 3], start = c(2016, 1), end = c(2023, 12), frequency = 12)
+
+fore_naive = forecast::naive(dat_ts, level=c(95), h=12)  
+
+plot(fore_naive, main = "Forecasting for Total Cost of sales by the Department - ORS")
+
+
+```
+
